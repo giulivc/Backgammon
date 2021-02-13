@@ -39,7 +39,7 @@ def rollDices() :
 
 
 def inputIsValid(inputStr) : 
-    if re.match('([1-9]|1[0-9]|2[0-4]) - ([1-9]|1[0-9]|2[0-4])', inputStr): 
+    if re.match('(-1|[1-9]|1[0-9]|2[0-4]) - ([1-9]|1[0-9]|2[0-4]|-1)', inputStr): 
         return True
     else : 
         print("Input does not meet required format. Please try again!")
@@ -70,17 +70,21 @@ def makeMove(color) :
             start = int(inputList[0])
             dest = int(inputList[1])
         
-        board.moveChecker(color, start, dest)
+        usedThrow = board.moveChecker(color, start, dest)
 
-        throw.remove(abs(start - dest))
+        throw.remove(usedThrow)
 
                        
-###################################
-###################################
+############################################################################################################################################
+############################################################################################################################################
 
+
+## initialize board 
 board = Board([(1,['b', 2]), (6, ['w', 5]), (8, ['w', 3]), (12, ['b', 5]), (13, ['w', 5]), (17, ['b', 3]), (19, ['b', 5]), (24, ['w', 2])])
 
+
 print(board)
+
 
 ## game loop 
 

@@ -1,5 +1,12 @@
+## class Board inherits from dict
+## key : point number
+## value : list consisting of [color of checkers, number of checkers] on that point (key)
+
+
 class Board (dict) : 
 
+    ## arguments are only the keys occupied with at least one checker
+    ## all other points (and bar) are initialized as empty lists
     def __init__(self, *args, **kwargs) : 
         super().__init__(*args, **kwargs)
         for i in range(1, 25) : 
@@ -7,6 +14,8 @@ class Board (dict) :
                 self[i] = []
         self[-1] = []
     
+
+    ## print methode to print backgammon board
     def __str__(self) : 
 
         result = ""
@@ -85,6 +94,7 @@ class Board (dict) :
         
         return result
 
+    ## checks if checker of color has a checker on bar
     def checkerOnBar(self, color) : 
 
             if not self[-1] : 
@@ -96,7 +106,7 @@ class Board (dict) :
                 return False
 
        
-
+    ## checks if a certain move from start to dest is possible for the color's throwing
     def moveIsPossible(self, color, start, dest, throw) : 
 
         if self.checkerOnBar(color) :
@@ -129,6 +139,23 @@ class Board (dict) :
                     if dest < 19 :
                         print("You can only re-enter on point 24 to 19")
 
+                    if not (25 - dest) in throw :
+                        print("This move is not possible with your throwing")
+                        return False
+
+                    if not self[dest] : 
+                        return True 
+
+                    else :
+
+                        if not self[dest][0] == color and self[dest][1] > 1 : 
+                            print("You cannot move your checker to", dest)
+                            print("This point is occupied by the opponent")
+
+                            return False    
+                        else :  
+                            return True
+
         ## check if there are any force moves
 
         if (color == 'b' and start > dest) or (color == 'w' and start < dest): 
@@ -160,8 +187,16 @@ class Board (dict) :
         
 
 
+    ## moves checker of certain color on point 'start' to point 'dest' (overwrites board instance)
     def moveChecker(self, color, start, dest) : 
-        
+
+        if start == -1 :
+            self.reenterChecker(color, dest)
+            if color == 'b' : 
+                return dest
+            else :
+                return 25 - dest
+
         self[start][1] -= 1
             
         if self[start][1] == 0 : 
@@ -175,6 +210,7 @@ class Board (dict) :
             
         else : 
 
+            ## check if there was already one
             if color == 'b' :
                 self[-1].append(['w', 1])
                 print("A white checker is now on the bar")
@@ -186,7 +222,81 @@ class Board (dict) :
 
         print(self)
 
+        return abs(start - dest)
 
-    #def allCheckersInHomeBoard(self, color) :
 
-    #def startBearingOff(self, color) : 
+    def reenterChecker(self, color, dest) : 
+
+        for ar in self[-1] :
+            if ar[0] == color : 
+                if ar[1] == 1 :
+                    self[-1].remove(ar)
+                else :
+                    ar[1] -= 1
+                break
+        
+        if not self[dest] : 
+            self[dest] = [color, 1]
+                    
+        elif self[dest][0] == color :
+            self[dest][1] += 1
+            
+        else : 
+
+            ## check if there was already one
+            if color == 'b' :
+                self[-1].append(['w', 1])
+                print("A white checker is now on the bar")
+            else : 
+                self[-1].append(['b', 1])
+                print("A black checker is now on the bar")
+                    
+            self[dest] = [color, 1]
+
+        print(self)
+
+        
+
+
+    def allCheckersInHomeBoard(self, color) :
+
+        if self.checkerOnBar(color) : 
+            return False
+
+        if color == 'b' : 
+            a = 1 
+            b = 19
+
+        else : 
+            a = 7
+            b = 25
+            
+        for point in range(a, b): 
+            if self[point] and self[point][0] == color : 
+                return False
+
+        return True
+
+
+
+    ## beared off checkers are removed from board dict
+    def bearOff(self, color, point) : 
+    
+        if self[point][1] == 1 :
+            self[point] = []
+        else : 
+            self[point][1] -= 1
+
+    ## checks if there are any checkers of color on board
+    def allCheckersBearedOff(self, color) : 
+
+        if self.checkerOnBar(color) : 
+            return False
+
+        for point in self : 
+            if self[point] and self[point][0] == color : 
+                return False
+
+        return True
+
+    
