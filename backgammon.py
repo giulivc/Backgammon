@@ -45,14 +45,13 @@ def inputIsValid(inputStr) :
         print("Input does not meet required format. Please try again!")
         return False
 
-def makeMove(color) : 
+def makeMove(color, throw) : 
 
     if color == 'b' : 
         print("Black's turn.")
     else : 
         print("White's turn.")
-    
-    throw = rollDices()
+
     numMoves = len(throw)
 
     for i in range(numMoves) : 
@@ -70,6 +69,7 @@ def makeMove(color) :
             start = int(inputList[0])
             dest = int(inputList[1])
         
+       
         usedThrow = board.moveChecker(color, start, dest)
 
         throw.remove(usedThrow)
@@ -92,12 +92,17 @@ running = True
 
 while running : 
     
-    makeMove('b')
+    throw_black = rollDices()
+    makeMove('b', throw_black)
+    
+    if board.allCheckersBearedOff('b') :
+        print("Black has won the game!")
+        running = False
+        
 
-    #if allCheckersInHomeBoard(board, 'b') : 
-     #   startBearingOff('b') 
+    throw_white = rollDices()
+    makeMove('w', throw_white)
 
-    makeMove('w')
-
-    #if allCheckersInHomeBoard(board, 'w') : 
-    #    startBearingOff('w') 
+    if board.allCheckersBearedOff('w') :
+        print("White has won the game!")
+        running = False

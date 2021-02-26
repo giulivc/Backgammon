@@ -12,10 +12,10 @@ class Board (dict) :
         for i in range(1, 25) : 
             if not i in self : 
                 self[i] = []
-        self[-1] = []
+        #self[-1] = []
     
 
-    ## print methode to print backgammon board
+    ## print method to print backgammon board
     def __str__(self) : 
 
         result = ""
@@ -109,6 +109,18 @@ class Board (dict) :
     ## checks if a certain move from start to dest is possible for the color's throwing
     def moveIsPossible(self, color, start, dest, throw) : 
 
+        if dest == -1 :
+            if not self.allCheckersInHomeBoard(color) : 
+                print("You cannot bear off! All of your checkers have to be in home board!")
+                return False
+            else : 
+                if self[start] and self[start][0] == color :
+                    return True
+                else: 
+                    print("None of your checkers is on", start)
+                    return False 
+                
+
         if self.checkerOnBar(color) :
             if not start == -1 :
                 print("You have to re-enter a checker on the bar first")
@@ -121,19 +133,6 @@ class Board (dict) :
                     if not dest in throw :
                         print("This move is not possible with your throwing")
                         return False
-
-                    if not self[dest] : 
-                        return True 
-
-                    else :
-
-                        if not self[dest][0] == color and self[dest][1] > 1 : 
-                            print("You cannot move your checker to", dest)
-                            print("This point is occupied by the opponent")
-
-                            return False    
-                        else :  
-                            return True
                     
                 else :
                     if dest < 19 :
@@ -143,20 +142,19 @@ class Board (dict) :
                         print("This move is not possible with your throwing")
                         return False
 
-                    if not self[dest] : 
+                if not self[dest] : 
                         return True 
+                else :
 
-                    else :
+                    if not self[dest][0] == color and self[dest][1] > 1 : 
+                        print("You cannot move your checker to", dest)
+                        print("This point is occupied by the opponent")
 
-                        if not self[dest][0] == color and self[dest][1] > 1 : 
-                            print("You cannot move your checker to", dest)
-                            print("This point is occupied by the opponent")
+                        return False    
+                    else :  
+                        return True
 
-                            return False    
-                        else :  
-                            return True
-
-        ## check if there are any force moves
+        ## TO DO: check if there are any force moves
 
         if (color == 'b' and start > dest) or (color == 'w' and start < dest): 
             print("You cannot move in this direction")
@@ -189,71 +187,59 @@ class Board (dict) :
 
     ## moves checker of certain color on point 'start' to point 'dest' (overwrites board instance)
     def moveChecker(self, color, start, dest) : 
+             
 
+        if dest == -1 : 
+            self.bearOff(color, start)
+            if color == 'b' : 
+                return start
+            else : 
+                return 25 - start
+        
+        elif not self[dest] : 
+            self[dest] = [color, 1]
+                    
+        elif self[dest][0] == color :
+            self[dest][1] += 1
+            
+        else : 
+
+            ## check if there was already one
+            if color == 'b' :
+                self[-1].append(['w', 1])
+                print("A white checker is now on the bar")
+            else : 
+                self[-1].append(['b', 1])
+                print("A black checker is now on the bar")
+                    
+            self[dest] = [color, 1]
+
+        
         if start == -1 :
-            self.reenterChecker(color, dest)
+            for ar in self[-1] :
+                if ar[0] == color : 
+                    if ar[1] == 1 :
+                        self[-1].remove(ar)
+                    else :
+                        ar[1] -= 1
+                    break
+                
+            print(self)
+
             if color == 'b' : 
                 return dest
             else :
                 return 25 - dest
 
-        self[start][1] -= 1
-            
-        if self[start][1] == 0 : 
-            self[start] = []
-                
-        if not self[dest] : 
-            self[dest] = [color, 1]
-                    
-        elif self[dest][0] == color :
-            self[dest][1] += 1
-            
         else : 
-
-            ## check if there was already one
-            if color == 'b' :
-                self[-1].append(['w', 1])
-                print("A white checker is now on the bar")
-            else : 
-                self[-1].append(['b', 1])
-                print("A black checker is now on the bar")
-                    
-            self[dest] = [color, 1]
-
-        print(self)
-
-        return abs(start - dest)
-
-
-    def reenterChecker(self, color, dest) : 
-
-        for ar in self[-1] :
-            if ar[0] == color : 
-                if ar[1] == 1 :
-                    self[-1].remove(ar)
-                else :
-                    ar[1] -= 1
-                break
-        
-        if not self[dest] : 
-            self[dest] = [color, 1]
-                    
-        elif self[dest][0] == color :
-            self[dest][1] += 1
+            self[start][1] -= 1
             
-        else : 
+            if self[start][1] == 0 : 
+                self[start] = []
+            
+            print(self)
 
-            ## check if there was already one
-            if color == 'b' :
-                self[-1].append(['w', 1])
-                print("A white checker is now on the bar")
-            else : 
-                self[-1].append(['b', 1])
-                print("A black checker is now on the bar")
-                    
-            self[dest] = [color, 1]
-
-        print(self)
+            return abs(start - dest)
 
         
 
@@ -278,7 +264,6 @@ class Board (dict) :
         return True
 
 
-
     ## beared off checkers are removed from board dict
     def bearOff(self, color, point) : 
     
@@ -297,6 +282,5 @@ class Board (dict) :
             if self[point] and self[point][0] == color : 
                 return False
 
-        return True
+        return True 
 
-    
