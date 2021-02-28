@@ -48,31 +48,42 @@ def inputIsValid(inputStr) :
 def makeMove(color, throw) : 
 
     if color == 'b' : 
-        print("Black's turn.")
+        strTurnColor = "\n\nBlack's turn. "
     else : 
-        print("White's turn.")
+        strTurnColor = "\n\nWhite's turn. "
 
     numMoves = len(throw)
 
     for i in range(numMoves) : 
 
-        inputStr = input("\n\nEnter move:\t")
+        inputStr = input(strTurnColor + "Enter move:\t")
+
+        while not inputIsValid(inputStr) : 
+            inputStr = input(strTurnColor + "Enter move:\t")
+        
         inputList = inputStr.split(" - ")
 
         start = int(inputList[0])
         dest = int(inputList[1])
 
-        while not inputIsValid(inputStr) or not board.moveIsPossible(color, start, dest, throw) : 
-            inputStr = input("\n\nEnter move:\t")
+        while not board.moveIsPossible(color, start, dest, throw) : 
+            inputStr = input(strTurnColor + "Enter move:\t")
+            
+            while not inputIsValid(inputStr) : 
+                inputStr = input(strTurnColor + "Enter move:\t")
+
             inputList = inputStr.split(" - ")
 
             start = int(inputList[0])
             dest = int(inputList[1])
         
        
-        usedThrow = board.moveChecker(color, start, dest)
+        usedThrow = board.moveChecker(color, start, dest, throw)
 
         throw.remove(usedThrow)
+
+        for dice in throw : 
+            print(dice, end=" ")
 
                        
 ############################################################################################################################################
@@ -80,8 +91,8 @@ def makeMove(color, throw) :
 
 
 ## initialize board 
-board = Board([(1,['b', 2]), (6, ['w', 5]), (8, ['w', 3]), (12, ['b', 5]), (13, ['w', 5]), (17, ['b', 3]), (19, ['b', 5]), (24, ['w', 2])])
-
+#board = Board([(1,['b', 2]), (6, ['w', 5]), (8, ['w', 3]), (12, ['b', 5]), (13, ['w', 5]), (17, ['b', 3]), (19, ['b', 5]), (24, ['w', 2])])
+board = Board([(2, ['w', 1]), (3, ['b', 2]), (8, ['w', 1])])
 
 print(board)
 
