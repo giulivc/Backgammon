@@ -9,7 +9,7 @@ Created on Sat Jan 30 22:12:48 2021
 # ============================================================================ #
 # Abgabe Projektarbeit Einführung ins Programmieren mit Python
 # 
-#     Julia Nierdermeier, Mat.Nr. 1818140
+#     Julia Niedermeier, Mat.Nr. 1818140
 #     Giulia von Canal, Mat.Nr. 2085665
 #
 #       Keine Note notwendig! 
