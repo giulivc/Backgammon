@@ -19,8 +19,8 @@ class Board (dict) :
     def __str__(self) : 
 
         result = ""
-        result += "-" * 122 + "\n"
-        result += "-" * 122 + "\n"
+        result += "-" * 65 + "\n"
+        result += "-" * 65 + "\n"
         
         for i in range(14) :
             result += "||\t"
@@ -89,12 +89,12 @@ class Board (dict) :
                     
             result += "||\t\n"
         
-        result += "-" * 122 + "\n"
-        result += "-" * 122 + "\n"
+        result += "-" * 65 + "\n"
+        result += "-" * 65 + "\n"
         
         return result
 
-    ## checks if checker of color has a checker on bar
+    ## returns True if checker of given color is on the bar
     def checkerOnBar(self, color) : 
 
             if not self[-1] : 
@@ -105,105 +105,55 @@ class Board (dict) :
                         return True
                 return False
 
+    ## returns True if all checkers of given color are in home board
+    def allCheckersInHomeBoard(self, color) :
+
+        if self.checkerOnBar(color) : 
+            return False
+
+        if color == 'b' : 
+            a = 1 
+            b = 19
+
+        else : 
+            a = 7
+            b = 25
+            
+        for point in range(a, b): 
+            if self[point] and self[point][0] == color : 
+                return False
+
+        return True
+
+    ## returns False if there are any checkers of given color on the board
+    def allCheckersBearedOff(self, color) : 
+
+        if self.checkerOnBar(color) : 
+            return False
+
+        for point in self : 
+            if self[point] and self[point][0] == color : 
+                return False
+
+        return True 
+
+
        
     ## checks if a certain move from start to dest is possible for the color's throwing
     def moveIsPossible(self, color, start, dest, throw) : 
 
         ### force moves or no move is possible any more 
 
+        ## bear off move
         if dest == -1 :
-            if not self.allCheckersInHomeBoard(color) : 
-                print("You cannot bear off! All of your checkers have to be in home board!")
-                return False
-            else : 
-                if self[start] and self[start][0] == color :
-
-                    if color == 'w' : 
-                        if start > 6 :
-                            print("You can only bear off checkers on point 1 to 6")
-                            return False
-
-                        if not start in throw : 
-                            
-                            for dice in throw : 
-                                if dice > start: 
-                                    for i in range(start + 1, 7) : 
-                                        if self[i] and self[i][0] == color :
-                                            print("There are checkers you have to bear off first!")
-                                            return False
-
-                                    return True
-                                else: 
-                                    continue
-
-                            print("This move is not possible with your throwing")
-                            return False
-
-                        else : 
-                            return True
-                            
-                        
-                    else :
-                        if start < 19 :
-                            print("You can only bear off checkers on point 24 to 19")
-
-                        if not start in throw : 
-                
-                            for dice in throw : 
-                                if dice > 25 - start: 
-                                    for i in range(19, start) : 
-                                        if self[i] and self[i][0] == color :
-                                            print("There are checkers you have to bear off first!")
-                                            return False
-
-                                    return True
-                                else: 
-                                    continue
-
-                            print("This move is not possible with your throwing")
-                            return False
-                            
-                        else : 
-                            return True  
-                
-                else :
-                    print("None of your checkers is on", start)
-                    return False   
+            return self.bearOffIsPossible(color, start, throw)
 
         if self.checkerOnBar(color) :
             if not start == -1 :
                 print("You have to re-enter a checker on the bar first")
                 return False 
             else : 
-                if color == 'b' : 
-                    if dest > 6 :
-                        print("You can only re-enter on point 1 to 6")
-                        return False
-                    if not dest in throw :
-                        print("This move is not possible with your throwing")
-                        return False
-                    
-                else :
-                    if dest < 19 :
-                        print("You can only re-enter on point 24 to 19")
-
-                    if not (25 - dest) in throw :
-                        print("This move is not possible with your throwing")
-                        return False
-
-                if not self[dest] : 
-                        return True 
-                else :
-
-                    if not self[dest][0] == color and self[dest][1] > 1 : 
-                        print("You cannot move your checker to", dest)
-                        print("This point is occupied by the opponent")
-
-                        return False    
-                    else :  
-                        return True
-
-        ## TO DO: check if there are any force moves
+                return self.reenterIsPossible(color, dest, throw)
 
         if (color == 'b' and start > dest) or (color == 'w' and start < dest): 
             print("You cannot move in this direction")
@@ -231,8 +181,105 @@ class Board (dict) :
         else : 
             print("None of your checkers is on", start)
             return False 
+
+
+    ###### bear off ######
+
+    def bearOffIsPossible(self, color, start, throw) :
+        
+        if not self.allCheckersInHomeBoard(color) : 
+                print("You cannot bear off! All of your checkers have to be in home board!")
+                return False
+        else : 
+            if self[start] and self[start][0] == color :
+
+                if color == 'w' : 
+                    if start > 6 :
+                        print("You can only bear off checkers on point 1 to 6")
+                        return False
+
+                    if not start in throw : 
+                            
+                        for dice in throw : 
+                            if dice > start: 
+                                for i in range(start + 1, 7) : 
+                                    if self[i] and self[i][0] == color :
+                                        print("There are checkers you have to bear off first!")
+                                        return False
+
+                                return True
+                            else: 
+                                continue
+
+                        print("This move is not possible with your throwing")
+                        return False
+
+                    else : 
+                        return True
+                            
+                        
+                else :
+                    if start < 19 :
+                        print("You can only bear off checkers on point 24 to 19")
+
+                    if not start in throw : 
+                
+                        for dice in throw : 
+                            if dice > 25 - start: 
+                                for i in range(19, start) : 
+                                    if self[i] and self[i][0] == color :
+                                        print("There are checkers you have to bear off first!")
+                                        return False
+
+                                return True
+                            else: 
+                                continue
+
+                        print("This move is not possible with your throwing")
+                        return False
+                            
+                    else : 
+                        return True  
+                
+            else :
+                print("None of your checkers is on", start)
+                return False   
+
         
 
+    ###### re-enter ######
+
+    def reenterIsPossible(self, color, dest, throw) : 
+        if color == 'b' : 
+            if dest > 6 :
+                print("You can only re-enter on point 1 to 6")
+                return False
+            if not dest in throw :
+                print("This move is not possible with your throwing")
+                return False
+                    
+        else :
+            if dest < 19 :
+                print("You can only re-enter on point 24 to 19")
+                return False
+
+            if not (25 - dest) in throw :
+                print("This move is not possible with your throwing")
+                return False
+
+        if not self[dest] : 
+                return True 
+        else :
+
+            if not self[dest][0] == color and self[dest][1] > 1 : 
+                print("You cannot move your checker to", dest)
+                print("This point is occupied by the opponent")
+
+                return False    
+            else :  
+                return True
+
+    
 
     ## moves checker of certain color on point 'start' to point 'dest' (overwrites board instance)
     def moveChecker(self, color, start, dest, throw) : 
@@ -301,28 +348,6 @@ class Board (dict) :
 
             return abs(start - dest)
 
-        
-
-
-    def allCheckersInHomeBoard(self, color) :
-
-        if self.checkerOnBar(color) : 
-            return False
-
-        if color == 'b' : 
-            a = 1 
-            b = 19
-
-        else : 
-            a = 7
-            b = 25
-            
-        for point in range(a, b): 
-            if self[point] and self[point][0] == color : 
-                return False
-
-        return True
-
 
     ## beared off checkers are removed from board dict
     def bearOff(self, color, point) : 
@@ -334,15 +359,5 @@ class Board (dict) :
 
         print(self)
 
-    ## checks if there are any checkers of color on board
-    def allCheckersBearedOff(self, color) : 
-
-        if self.checkerOnBar(color) : 
-            return False
-
-        for point in self : 
-            if self[point] and self[point][0] == color : 
-                return False
-
-        return True 
+    
 

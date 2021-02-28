@@ -54,7 +54,7 @@ def makeMove(color, throw) :
 
     numMoves = len(throw)
 
-    for i in range(numMoves) : 
+    for move in range(numMoves) : 
 
         inputStr = input(strTurnColor + "Enter move:\t")
 
@@ -91,6 +91,14 @@ def makeMove(color, throw) :
 
 
 ## initialize board 
+
+print("\tBACKGAMMON\n\n",
+      "How to play:\n\n",
+      "The two players are black (b) and white (w)\n",
+      "A checker can be moved with the following input format:\n\n\tX - Y\n\n X represents the start point, Y represents the destination point\n",
+      "You can re-enter a checker with \t-1 - Y\n",
+      "You can bear off a checker with \tX - -1\n\n")
+
 board = Board([(1,['b', 2]), (6, ['w', 5]), (8, ['w', 3]), (12, ['b', 5]), (13, ['w', 5]), (17, ['b', 3]), (19, ['b', 5]), (24, ['w', 2])])
 
 
@@ -104,6 +112,7 @@ running = True
 while running : 
     
     throw_black = rollDices()
+        
     makeMove('b', throw_black)
     
     if board.allCheckersBearedOff('b') :
